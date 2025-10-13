@@ -1,0 +1,855 @@
+<main class="p-6 space-y-6 bg-gray-100">
+  <section class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+    <!-- Stat Cards Row -->
+    <div class="bg-white shadow rounded-lg p-4 border-l-4 border-blue-500 ml-4 cursor-pointer"
+      (click)="showPopup('totalAssociates')">
+      <div class="flex justify-between items-center">
+        <div>
+          <h4 class="text-gray-500 text-sm">Total Associates</h4>
+          <p class="text-2xl font-bold text-gray-800" id="totalAssociates">{{ totalAssociates }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-4 border-l-4 border-green-500 cursor-pointer"
+      (click)="showPopup('topPerformers')">
+      <div class="flex justify-between items-center">
+        <div>
+          <h4 class="text-gray-500 text-sm">Top Performers</h4>
+          <p class="text-2xl font-bold text-gray-800">{{ topPerformers }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-4 border-l-4 border-red-500 cursor-pointer"
+      (click)="showPopup('bottomPerformers')">
+      <div class="flex justify-between items-center">
+        <div>
+          <h4 class="text-gray-500 text-sm">Bottom Performers</h4>
+          <p class="text-2xl font-bold text-gray-800">{{ bottomPerformers }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZONE BUTTONS -->
+    <div class="flex justify-center w-full">
+      <div class="flex justify-between items-center gap-8">
+        <div class="flex-1 flex justify-center">
+          <div
+            class="w-20 h-20 flex flex-col items-center justify-center rounded-full font-bold text-white bg-green-500 text-center mr-2 cursor-pointer border-4 border-green-700"
+            (click)="openPopupz('topMetric')">
+            <span>Green</span>
+            <span>Zone</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-between items-center gap-8">
+        <div class="flex-1 flex justify-center">
+          <div
+            class="w-20 h-20 flex flex-col items-center justify-center rounded-full font-bold text-white bg-yellow-400 text-center mr-2 cursor-pointer border-4 border-yellow-600"
+            (click)="openPopupz('averageMetric')">
+            <span>Yellow</span>
+            <span>Zone</span>
+          </div>
+          <div
+            class="w-20 h-20 flex flex-col items-center justify-center rounded-full font-bold text-white bg-red-500 text-center mr-2 cursor-pointer border-4 border-red-700"
+            (click)="openPopupz('leastMetric')">
+            <span>Red</span>
+            <span>Zone</span>
+          </div>
+        </div>
+        <!-- calender filter -->
+        <div class="flex items-center justify-between w-full px-4 py-3">
+
+          <div class="flex items-center gap-3">
+            <label class="text-lg font-bold text-gray-800">Select Time Zone:</label>
+            <select
+              class="text-lg font-semibold border-2 border-blue-400 rounded-xl px-4 py-2 bg-white shadow focus:outline-none focus:ring-4 focus:ring-blue-200 transition-all duration-200">
+              <option value="Select Zone">Select Zone</option>
+              <option value="apac">APAC</option>
+              <option value="emea">EMEA</option>
+              <option value="amer">AMER</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 p-3 bg-grey rounded-lg  max-w-fit">
+          <mat-form-field>
+            <mat-label>Start Date</mat-label>
+            <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate" (dateChange)="applyFilter()">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>End Date</mat-label>
+            <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate" (dateChange)="applyFilter()">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+
+          <button mat-raised-button (click)="applyFilter()"
+            class="bg-blue-500 hover:bg-blue-600 text-white rounded-full h-10 px-5 text-sm shadow-md transition-colors duration-200">
+            Apply Filter
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Popup Container -->
+      <div *ngIf="popupType" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">
+              {{ popupType === 'topMetric' ? 'Top Metric Details' :
+              popupType === 'averageMetric' ? 'Average Metric Details' :
+              popupType === 'leastMetric' ? 'Least Metric Details' : '' }}
+            </h2>
+            <button (click)="closePopupz()"
+              class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+          </div>
+
+          <div class="mb-4">
+            <ul class="space-y-2">
+              <li *ngFor="let metric of getZoneMetrics()"
+                class="bg-blue-50 px-3 py-2 rounded flex justify-between items-center">
+                <div>
+                  <span class="font-semibold text-gray-700">{{ metric.label }}:</span>
+                  <span class="text-blue-600 font-bold ml-2">{{ metric.value }}</span>
+                </div>
+                <span [ngClass]="metric.colorClass">{{ metric.change }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="text-center">
+            <button (click)="closePopupz()"
+              class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+    <!-- === Row 1 === -->
+    <div class="bg-white rounded-lg shadow p-6 col-span-1">
+      <h3 class="text-xl font-bold text-blue-600">Overall Team Performance</h3>
+      <ul class="space-y-6 text-base text-gray-700 mt-6">
+        <!-- Show only 4 key parameters -->
+        <li class="flex justify-between items-center border-b pb-4">
+          <div class="flex items-center gap-4">
+            <i class="fas fa-comments text-blue-500 text-2xl"></i>
+            <div>
+              <p class="font-semibold text-lg">Chat Tickets</p>
+            </div>
+          </div>
+          <span class="font-bold text-blue-600 text-lg">10</span>
+        </li>
+        <li class="flex justify-between items-center border-b pb-4">
+          <div class="flex items-center gap-4">
+            <i class="fas fa-globe text-green-500 text-2xl"></i>
+            <p class="font-semibold text-lg">Web Tickets</p>
+          </div>
+          <span class="font-bold text-blue-600 text-lg">15</span>
+        </li>
+        <li class="flex justify-between items-center border-b pb-4">
+          <div class="flex items-center gap-4">
+            <i class="fas fa-fire text-orange-500 text-2xl"></i>
+            <p class="font-semibold text-lg">Smoky Cases</p>
+          </div>
+          <span class="font-bold text-blue-600 text-lg">7</span>
+        </li>
+      </ul>
+      <!-- Trigger Button -->
+      <div class="mt-6 text-center">
+        <a href="#" (click)="openOverallPerformancePopup()" class="text-blue-600 font-bold hover:underline text-lg">View
+          More</a>
+      </div>
+
+      <!-- Popup Modal -->
+      <div *ngIf="showOverallPerformancePopup"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold mb-4">My Action</h3>
+            <button (click)="closeOverallPerformancePopup()"
+              class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+          </div>
+          <ul class="space-y-6 text-base text-gray-700 mt-2">
+            <li *ngFor="let item of overallPerformanceData" class="flex justify-between items-center border-b pb-4">
+              <div class="flex items-center gap-4">
+                <i [class]="item.icon + ' text-2xl'"></i>
+                <div *ngIf="item.subtitle; else noSubtitle">
+                  <p class="font-semibold text-lg">{{ item.title }}</p>
+                  <p class="text-sm text-gray-500">{{ item.subtitle }}</p>
+                </div>
+                <ng-template #noSubtitle>
+                  <p class="font-semibold text-lg">{{ item.title }}</p>
+                </ng-template>
+              </div>
+              <span class="font-bold text-blue-600 text-lg">{{ item.value }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall Team Performance Popup -->
+    <div id="overallPerformancePopup"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold mb-4">My Action</h3>
+          <button (click)="closeOverallPerformancePopup()"
+            class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+        </div>
+        <ul class="space-y-6 text-base text-gray-700 mt-2">
+          <!-- The rest of the parameters -->
+          <li class="flex justify-between items-center border-b pb-4">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-comments text-blue-500 text-2xl"></i>
+              <div>
+                <p class="font-semibold text-lg">Chat Tickets</p>
+                <p class="text-sm text-gray-500">Premium: 5 | Non Premium: 5</p>
+              </div>
+            </div>
+            <span class="font-bold text-blue-600 text-lg">10</span>
+          </li>
+          <li class="flex justify-between items-center border-b pb-4">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-globe text-green-500 text-2xl"></i>
+              <div>
+                <p class="font-semibold text-lg">Web Tickets</p>
+                <p class="text-sm text-gray-500">Premium: 8 | Non Premium: 7</p>
+              </div>
+            </div>
+            <span class="font-bold text-blue-600 text-lg">15</span>
+          </li>
+          <li class="flex justify-between items-center border-b pb-4">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-user-graduate text-yellow-500 text-2xl"></i>
+              <div>
+                <p class="font-semibold text-lg">Training</p>
+                <p class="text-sm text-gray-500">Nested: 7 | Ready: 5</p>
+              </div>
+            </div>
+            <span class="font-bold text-blue-600 text-lg">12</span>
+          </li>
+          <li class="flex justify-between items-center border-b pb-4">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-user-plus text-purple-500 text-2xl"></i>
+              <p class="font-semibold text-lg">Active Cases</p>
+            </div>
+            <span class="font-bold text-blue-600 text-lg">15</span>
+          </li>
+          <li class="flex justify-between items-center border-b pb-4">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-calendar-check text-red-500 text-2xl"></i>
+              <p class="font-semibold text-lg">Release Plan</p>
+            </div>
+            <span class="font-bold text-blue-600 text-lg">10</span>
+          </li>
+          <li class="flex justify-between items-center border-b pb-4">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-briefcase text-pink-500 text-2xl"></i>
+              <p class="font-semibold text-lg">TTM</p>
+            </div>
+            <span class="font-bold text-blue-600 text-lg">40%</span>
+          </li>
+          <li class="flex justify-between items-center border-b pb-4">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-fire text-orange-500 text-2xl"></i>
+              <p class="font-semibold text-lg">Smoky Cases</p>
+            </div>
+            <span class="font-bold text-blue-600 text-lg">7</span>
+          </li>
+          <li class="flex justify-between items-center border-b pb-4">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-clipboard-check text-blue-500 text-2xl"></i>
+              <div>
+                <p class="font-semibold text-lg">Handled Cases</p>
+                <p class="text-sm text-gray-500">Well Handled Cases: 5</p>
+              </div>
+
+            </div>
+            <span class="font-bold text-blue-600 text-lg">10</span>
+          </li>
+          <li class="flex justify-between items-center">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+              <p class="font-semibold text-lg">Cases Closed</p>
+            </div>
+            <span class="font-bold text-blue-600 text-lg">5</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6 col-span-1">
+      <div class="w-full mx-auto mt-2">
+        <h4 class="text-xl text-blue-700 font-bold mb-2 text-center">Input Metrics</h4>
+        <div class="flex items-end justify-center h-56 space-x-4">
+          <!-- ...bars... -->
+          <!-- Bar 1 -->
+          <div class="flex flex-col items-center">
+            <div class="relative bg-red-500 w-14 rounded-t-lg flex items-end justify-center" style="height: 120px;">
+              <span
+                class="absolute -top-7 left-1/2 transform -translate-x-1/2 text-base font-bold text-red-600">+10.6%</span>
+              <span
+                class="absolute top-3 left-1/2 transform -translate-x-1/2 text-base font-bold text-white">45.6%</span>
+            </div>
+            <span class="mt-3 text-base font-semibold text-red-700">Hard Consult Rate</span>
+          </div>
+          <!-- Bar 2 -->
+          <div class="flex flex-col items-center">
+            <div class="relative bg-green-500 w-14 rounded-t-lg flex items-end justify-center" style="height: 100px;">
+              <span
+                class="absolute -top-7 left-1/2 transform -translate-x-1/2 text-base font-bold text-green-600">+9%</span>
+              <span class="absolute top-3 left-1/2 transform -translate-x-1/2 text-base font-bold text-white">34%</span>
+            </div>
+            <span class="mt-3 text-base font-semibold text-green-700">SDR</span>
+          </div>
+          <!-- Bar 3 -->
+          <div class="flex flex-col items-center">
+            <div class="relative bg-red-500 w-14 rounded-t-lg flex items-end justify-center" style="height: 50px;">
+              <span
+                class="absolute -top-7 left-1/2 transform -translate-x-1/2 text-base font-bold text-red-600">+0.1</span>
+              <span class="absolute top-3 left-1/2 transform -translate-x-1/2 text-base font-bold text-white">2.6</span>
+            </div>
+            <span class="mt-3 text-base font-semibold text-red-700">Average FMR Hrs</span>
+          </div>
+          <!-- Bar 4 -->
+          <div class="flex flex-col items-center">
+            <div class="relative bg-green-500 w-14 rounded-t-lg flex items-end justify-center" style="height: 145px;">
+              <span
+                class="absolute -top-7 left-1/2 transform -translate-x-1/2 text-base font-bold text-green-600">+3.4%</span>
+              <span
+                class="absolute top-3 left-1/2 transform -translate-x-1/2 text-base font-bold text-white">83.4%</span>
+            </div>
+            <span class="mt-3 text-base font-semibold text-green-700">sBCR</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button (click)="openKeyPopup()"
+          class="bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-600 text-base">
+          Input Key
+        </button>
+      </div>
+
+      <!-- Key Popup Modal -->
+      <div *ngIf="showKeyPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Key</h2>
+            <button (click)="closeKeyPopup()"
+              class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+          </div>
+          <ul class="space-y-3 text-base">
+            <li>
+              Hard Consult Rate <span class="ml-2 text-green-600 font-bold">&lt; 35%</span>
+            </li>
+            <li>
+              SDR <span class="ml-2 text-green-600 font-bold">&gt; 25%</span>
+            </li>
+            <li>
+              Average FMR Hrs <span class="ml-2 text-green-600 font-bold">&lt; 2.5</span>
+            </li>
+            <li>
+              sBCR <span class="ml-2 text-green-600 font-bold">&gt; 80%</span>
+            </li>
+          </ul>
+          <div class="text-center mt-6">
+            <button (click)="closeKeyPopup()"
+              class="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-600 text-base">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6 col-span-1">
+      <div class="w-full mx-auto mt-2">
+        <h4 class="text-xl text-blue-700 font-bold mb-2 text-center">Output Metrics</h4>
+        <div class="flex items-end justify-between h-56 space-x-4 w-full">
+          <!-- Bar 1: CES -->
+          <div class="flex flex-col items-center flex-1">
+            <div class="relative bg-red-500 w-14 rounded-t-lg flex items-end justify-center" style="height: 130px;">
+              <span
+                class="absolute -top-7 left-1/2 transform -translate-x-1/2 text-base font-bold text-red-600">-11%</span>
+              <span class="absolute top-3 left-1/2 transform -translate-x-1/2 text-base font-bold text-white">79%</span>
+            </div>
+            <span class="mt-3 text-base font-semibold text-red-700">CES</span>
+          </div>
+          <!-- Bar 2: Escalation Rate -->
+          <div class="flex flex-col items-center flex-1">
+            <div class="relative bg-yellow-400 w-14 rounded-t-lg flex items-end justify-center" style="height: 50px;">
+              <span
+                class="absolute -top-7 left-1/2 transform -translate-x-1/2 text-base font-bold text-yellow-600">+0.3%</span>
+              <span
+                class="absolute top-3 left-1/2 transform -translate-x-1/2 text-base font-bold text-white">2.7%</span>
+            </div>
+            <span class="mt-3 text-base font-semibold text-yellow-700">Escalation Rate</span>
+          </div>
+          <!-- Bar 3: Quality -->
+          <div class="flex flex-col items-center flex-1">
+            <div class="relative bg-green-500 w-14 rounded-t-lg flex items-end justify-center" style="height: 165px;">
+              <span
+                class="absolute -top-7 left-1/2 transform -translate-x-1/2 text-base font-bold text-green-600">+6.4%</span>
+              <span
+                class="absolute top-3 left-1/2 transform -translate-x-1/2 text-base font-bold text-white">93.4%</span>
+            </div>
+            <span class="mt-3 text-base font-semibold text-green-700">Quality</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button (click)="openKeyPopup()"
+          class="bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-600 text-base">
+          Output Key
+        </button>
+      </div>
+
+      <div id="outputKeyPopup" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Output Key</h2>
+            <button (click)="closeKeyPopup()"
+              class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+          </div>
+          <ul class="space-y-2">
+            <li>
+              CES <span class="ml-2 text-green-600 font-bold">&gt; 90%</span>
+            </li>
+            <li>
+              Escalation Rate <span class="ml-2 text-green-600 font-bold">&lt; 3%</span>
+            </li>
+            <li>
+              Quality <span class="ml-2 text-green-600 font-bold">&gt; 87%</span>
+            </li>
+          </ul>
+          <div class="text-center mt-4">
+            <button (click)="closeKeyPopup()"
+              class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === Row 2 === -->
+    <div class="bg-white rounded-lg shadow p-6 col-span-1"><!-- Specialization Ranking -->
+      <h3 class="text-base font-semibold mb-6 text-center">Specialization Ranking</h3>
+      <div class="flex flex-col justify-center flex-1 h-full space-y-6">
+        <!-- Storage -->
+        <div class="flex items-center w-full">
+          <span class="flex-1 text-sm text-gray-700 cursor-pointer hover:font-bold"
+            onclick="showTeamPopup('storageTeamPopup')">Storage</span>
+          <div class="flex-1 mx-2">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-green-500 h-2 rounded-full" style="width: 90%;"></div>
+            </div>
+          </div>
+          <span class="text-sm font-semibold text-blue-600 w-6 text-right">1</span>
+        </div>
+        <!-- Storage Popup -->
+        <div id="storageTeamPopup" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+          <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold">Storage</h2>
+              <button onclick="closeTeamPopup('storageTeamPopup')"
+                class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="mb-4">
+              <p class="text-gray-700 mb-2 font-semibold">Team Performance: <span
+                  class="text-blue-600 font-bold">4.30</span></p>
+              <p class="text-gray-700 mb-2 font-semibold">Score: <span class="text-blue-600 font-bold">2.58</span>
+              </p>
+            </div>
+            <div class="text-center">
+              <button onclick="closeTeamPopup('storageTeamPopup')"
+                class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Serverless -->
+        <div class="flex items-center w-full">
+          <span class="flex-1 text-sm text-gray-700 cursor-pointer hover:font-bold"
+            onclick="showTeamPopup('serverlessTeamPopup')">Serverless</span>
+          <div class="flex-1 mx-2">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-green-400 h-2 rounded-full" style="width: 85%;"></div>
+            </div>
+          </div>
+          <span class="text-sm font-semibold text-blue-600 w-6 text-right">2</span>
+        </div>
+        <div id="serverlessTeamPopup"
+          class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+          <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold">Serverless</h2>
+              <button onclick="closeTeamPopup('serverlessTeamPopup')"
+                class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="mb-4">
+              <p class="text-gray-700 mb-2 font-semibold">Team Performance: <span
+                  class="text-blue-600 font-bold">4.00</span></p>
+              <p class="text-gray-700 mb-2 font-semibold">Score: <span class="text-blue-600 font-bold">2.40</span>
+              </p>
+            </div>
+            <div class="text-center">
+              <button onclick="closeTeamPopup('serverlessTeamPopup')"
+                class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Containers -->
+        <div class="flex items-center w-full">
+          <span class="flex-1 text-sm text-gray-700 cursor-pointer hover:font-bold"
+            onclick="showTeamPopup('containersTeamPopup')">Containers</span>
+          <div class="flex-1 mx-2">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-green-300 h-2 rounded-full" style="width: 80%;"></div>
+            </div>
+          </div>
+          <span class="text-sm font-semibold text-blue-600 w-6 text-right">3</span>
+        </div>
+        <div id="containersTeamPopup"
+          class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+          <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold">Containers</h2>
+              <button onclick="closeTeamPopup('containersTeamPopup')"
+                class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="mb-4">
+              <p class="text-gray-700 mb-2 font-semibold">Team Performance: <span
+                  class="text-blue-600 font-bold">3.90</span></p>
+              <p class="text-gray-700 mb-2 font-semibold">Score: <span class="text-blue-600 font-bold">2.34</span>
+              </p>
+            </div>
+            <div class="text-center">
+              <button onclick="closeTeamPopup('containersTeamPopup')"
+                class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- GKE -->
+        <div class="flex items-center w-full">
+          <span class="flex-1 text-sm text-gray-700 cursor-pointer hover:font-bold"
+            onclick="showTeamPopup('gkeTeamPopup')">GKE</span>
+          <div class="flex-1 mx-2">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-green-200 h-2 rounded-full" style="width: 75%;"></div>
+            </div>
+          </div>
+          <span class="text-sm font-semibold text-blue-600 w-6 text-right">4</span>
+        </div>
+        <div id="gkeTeamPopup" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+          <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold">GKE</h2>
+              <button onclick="closeTeamPopup('gkeTeamPopup')"
+                class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="mb-4">
+              <p class="text-gray-700 mb-2 font-semibold">Team Performance: <span
+                  class="text-blue-600 font-bold">3.75</span></p>
+              <p class="text-gray-700 mb-2 font-semibold">Score: <span class="text-blue-600 font-bold">2.25</span>
+              </p>
+            </div>
+            <div class="text-center">
+              <button onclick="closeTeamPopup('gkeTeamPopup')"
+                class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Security -->
+        <div class="flex items-center w-full">
+          <span class="flex-1 text-sm text-gray-700 cursor-pointer hover:font-bold"
+            onclick="showTeamPopup('securityTeamPopup')">Security</span>
+          <div class="flex-1 mx-2">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-blue-500 h-2 rounded-full" style="width: 70%;"></div>
+            </div>
+          </div>
+          <span class="text-sm font-semibold text-blue-600 w-6 text-right">5</span>
+        </div>
+        <div id="securityTeamPopup"
+          class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+          <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold">Security</h2>
+              <button onclick="closeTeamPopup('securityTeamPopup')"
+                class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="mb-4">
+              <p class="text-gray-700 mb-2 font-semibold">Team Performance: <span
+                  class="text-blue-600 font-bold">3.45</span></p>
+              <p class="text-gray-700 mb-2 font-semibold">Score: <span class="text-blue-600 font-bold">2.07</span>
+              </p>
+            </div>
+            <div class="text-center">
+              <button onclick="closeTeamPopup('securityTeamPopup')"
+                class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- operational -->
+    <div class="bg-white p-6 rounded-lg shadow w-full mb-8 opmetrics-card">
+      <h5 class="text-lg font-semibold mb-4 text-gray-800">Operational Metrics</h5>
+      <div class="grid grid-cols-2 gap-4">
+        <button (click)="showMissions('Shrinkage')"
+          class="flex items-center justify-start gap-2 bg-blue-50 text-blue-700 font-semibold py-2 px-3 rounded-lg hover:bg-blue-100 shadow">
+          <i class="fa-solid fa-lg fa-minimize"></i> Shrinkage
+        </button>
+        <button (click)="showMissions('Experiential Specialization Training')"
+          class="flex items-center justify-start gap-2 bg-blue-50 text-blue-700 font-semibold py-2 px-3 rounded-lg hover:bg-blue-100 shadow">
+          <i class="fa-solid fa-lg fa-graduation-cap"></i>
+          Experiential Specialization Training
+        </button>
+        <button (click)="showMissions('Innovation / Transformation Ideas')"
+          class="flex items-center justify-start gap-2 bg-blue-50 text-blue-700 font-semibold py-2 px-3 rounded-lg hover:bg-blue-100 shadow">
+          <i class="fa-solid fa-lg fa-medal"></i> Innovation/ Transformation Ideas
+        </button>
+        <button (click)="showMissions('Open Escalations')"
+          class="flex items-center justify-start gap-2 bg-blue-50 text-blue-700 font-semibold py-2 px-3 rounded-lg hover:bg-blue-100 shadow">
+          <i class="fa-solid fa-lg fa-triangle-exclamation"></i> Open Escalations
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6 col-span-1">
+      <div class="flex justify-between items-center mb-2">
+        <h4 class="text-lg font-bold text-gray-800 mb-0">My Action</h4>
+      </div>
+      <div class="flex flex-col gap-1">
+        <button (click)="showMissions('Tasks Missed')"
+          class="bg-blue-100 text-blue-700 font-semibold py-2 px-3 rounded-lg text-center cursor-pointer hover:bg-blue-200 w-full">
+          Tasks Missed by TSRs
+        </button>
+        <button (click)="showMissions('Internal Tasks')"
+          class="bg-blue-100 text-blue-700 font-semibold py-2 px-3 rounded-lg text-center cursor-pointer hover:bg-blue-200 w-full">
+          Internal Tasks
+        </button>
+        <button (click)="showMissions('Escalations Yet to be Reviewed')"
+          class="bg-blue-100 text-blue-700 font-semibold py-2 px-3 rounded-lg text-center cursor-pointer hover:bg-blue-200 w-full">
+          Escalations Yet to be Reviewed
+        </button>
+        <button (click)="showMissions('Pending IPGS Cases')"
+          class="bg-blue-100 text-blue-700 font-semibold py-2 px-3 rounded-lg text-center cursor-pointer hover:bg-blue-200 w-full">
+          Pending IPGS Cases
+        </button>
+      </div>
+    </div>
+
+    <!-- === Row 3 (smaller height cards) === -->
+    <div class="bg-white rounded-lg shadow p-4 h-32 flex items-center justify-between">
+      <p class="text-sm font-medium text-gray-700">
+        <!-- You vs 1st content -->
+        <a href="#"
+          onclick="document.getElementById('youVsFirstPopup').classList.remove('hidden');document.getElementById('youVsFirstPopup').classList.add('flex');"
+          class="text-blue-700 text-2xl md:text-3xl font-bold hover:underline mt-4 w-fit block text-center transition
+                   flex justify-between items-center"> 
+                   <span class="flex flex-col items-center"> How far are you from<br>
+            <span class="text-blue-500">being the best?</span>                                                                                                                                               
+          </span>
+          <i class="fa-solid fa-people-arrows ml-4 text-4xl md:text-5xl"></i> </a>
+
+        <!-- Popup Modal -->
+      <div id="youVsFirstPopup" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div
+          class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-full md:max-w-3xl relative flex flex-col border-2 border-blue-100 max-h-[90vh] overflow-y-auto">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-blue-700 flex items-center gap-2">
+              <i class="fas fa-trophy text-yellow-400"></i>
+              You <span class="text-gray-400 font-normal">vs</span> <span class="text-green-600">Best Team</span>
+            </h2>
+            <button
+              onclick="document.getElementById('youVsFirstPopup').classList.add('hidden');document.getElementById('youVsFirstPopup').classList.remove('flex');"
+              class="text-gray-400 hover:text-blue-600 text-3xl leading-none transition">&times;</button>
+          </div>
+          <!-- Chart and box below, not overlapping -->
+          <div class="flex flex-col gap-4">
+            <div style="min-height:500px;">
+              <canvas baseChart [data]="youVsFirstData" [options]="youVsFirstOptions" [type]="'bar'" height="260"
+                style="max-width:100%;height:auto;">
+              </canvas>
+            </div>
+            <div class="flex justify-end">
+              <div class="bg-blue-50 bg-opacity-90 rounded-xl p-3 shadow text-xs w-52 border border-blue-100">
+                <h3 class="text-xs font-semibold text-blue-600 mb-1">What is considered "Good"?</h3>
+                <ul class="space-y-0.5 leading-tight">
+                  <li>
+                    <span class="font-bold text-blue-700">CES</span>
+                    <span class="text-gray-600">&gt; 90%</span>
+                  </li>
+                  <li>
+                    <span class="font-bold text-green-700">Escalation Rate</span>
+                    <span class="text-gray-600">&lt; 3%</span>
+                  </li>
+                  <li>
+                    <span class="font-bold text-green-700">SDR</span>
+                    <span class="text-gray-600">&gt; 25%</span>
+                  </li>
+                  <li>
+                    <span class="font-bold text-yellow-700">Quality</span>
+                    <span class="text-gray-600">&gt; 85%</span>
+                  </li>
+                  <li>
+                    <span class="font-bold text-pink-700">FMR</span>
+                    <span class="text-gray-600">&lt; 2.5 hours</span>
+                  </li>
+                  <li>
+                    <span class="font-bold text-red-700">Hard Consult Rate</span>
+                    <span class="text-gray-600">&lt; 35%</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4 h-32 flex items-center justify-between">
+      <h3 class="text-lg font-bold mb-4">My Wishlist</h3>
+      <div class="flex flex-col gap-2">
+        <p class="text-gray-500 mb-2">Request for training in Team Management</p>
+        <div class="flex gap-2">
+
+          <input type="text" id="wishlistInput" placeholder="What do you wish to add?"
+            class="flex-1 border border-gray-300 rounded-lg p-2">
+          <button class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600"
+            onclick="saveWishlist()">
+            Save
+          </button>
+
+          <script>
+            function saveWishlist() {
+              const input = document.getElementById('wishlistInput');
+              if (!input.value.trim()) {
+                alert('Please enter a wishlist item.');
+                return;
+              }
+              alert('Your wishlist has been saved!');
+            }
+          </script>
+        </div>
+      </div>
+      <div id="popupModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+          <div class="flex justify-between items-center mb-4">
+            <h2 id="popupTitle" class="text-lg font-semibold">Popup Title</h2>
+            <button onclick="closePopup()" class="text-gray-500 hover:text-gray-700">&times;</button>
+          </div>
+          <ul id="popupContent" class="space-y-2 text-sm text-gray-700">
+            <!-- Content dynamically injected here -->
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4 h-32 flex items-center justify-between">
+      <h3 class="text-lg font-bold mb-4">Assign a Task to Team</h3>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <label for="taskFilter" class="text-sm font-semibold text-gray-700">Assign To:</label>
+          <select id="taskFilter" class="border border-gray-300 rounded-lg p-2 flex-1"
+            onchange="handleTaskFilterChange()">
+            <option value="everyone">Everyone</option>
+            <option value="individual">Individual</option>
+          </select>
+        </div>
+        <p id="selectedTSRDisplay" class="text-blue-700 font-semibold mt-2"></p>
+        <div class="flex gap-2">
+          <input type="text" id="actionItemInput" placeholder="Enter action item here"
+            class="flex-1 border border-gray-300 rounded-lg p-2">
+          <button class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600"
+            onclick="saveActionItem()">
+            Save
+          </button>
+
+          <script>
+            function saveActionItem() {
+              const input = document.getElementById('actionItemInput');
+              if (!input.value.trim()) {
+                alert('Please enter an action item.');
+                return;
+              }
+              alert('Your action item has been saved!');
+            }
+          </script>
+        </div>
+      </div>
+    </div>
+
+    <!-- Individual TSR Selection Modal -->
+    <div id="individualModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold">Select a TSR</h2>
+          <button onclick="closeIndividualModal()" class="text-gray-500 hover:text-gray-700">&times;</button>
+        </div>
+        <div class="space-y-4">
+          <select id="tsrDropdown" class="w-full border border-gray-300 rounded-lg p-2">
+            <option value="intro">Choose a TSR</option>
+            <option value="tsr1">Arjun Mehta</option>
+            <option value="tsr2">Priya Sharma</option>
+            <option value="tsr3">Sneha Reddy</option>
+            <!-- Add more TSRs as needed -->
+          </select>
+          <button onclick="saveTSRSelection()"
+            class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 w-full">
+            Save Selection
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+</main>
+
+<div class="fixed inset-0 bg-black bg-opacity-50 z-50 justify-center items-center pt-12"
+  [ngClass]="{'flex': showStatPopup, 'hidden': !showStatPopup}">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+    <div class="flex justify-between items-center mb-4">
+      <h2 id="popupTitle" class="text-lg font-semibold">{{ popupTitle }}</h2>
+      <button (click)="closePopup()" class="text-gray-500 hover:text-gray-700">&times;</button>
+    </div>
+    <!-- Show search only in popup -->
+    <div *ngIf="showStatPopup">
+      <input type="text" [(ngModel)]="searchTerm" (input)="onSearchAssociate()" placeholder="Search associates..."
+        class="w-full mb-3 p-2 border border-gray-300 rounded"
+        *ngIf="popupTitle === 'Total Associates' || popupTitle === 'Top Performers' || popupTitle === 'Average Performers' || popupTitle === 'Bottom Performers'" />
+    </div>
+    <ul id="popupContent" class="space-y-2 text-sm text-gray-700 max-h-72 overflow-y-auto">
+      <li *ngFor="let item of filteredPopupContent" class="bg-blue-100 rounded px-4 py-2 font-medium">
+        {{ item }}
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div id="missionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold" id="missionTitle">Missions</h2>
+      <button (click)="closeModal()" class="text-gray-500 hover:text-gray-700">&times;</button>
+    </div>
+    <ul class="space-y-2 text-sm text-gray-700" id="missionList"></ul>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+/* Styles specific to the mission modal component */
+
+.mission-modal {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+}
+
+.mission-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mission-modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.mission-modal-close {
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #888;
+}
+
+.mission-modal-content {
+    margin-top: 15px;
+}
+
+.mission-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.mission-list-item {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.mission-name {
+    font-weight: 600;
+}
+
+.mission-score {
+    font-weight: bold;
+    color: #3b82f6; /* Tailwind blue-600 */
+}

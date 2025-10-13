@@ -1,0 +1,49 @@
+/* Styles for the Popup Modal Component */
+
+.popup-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-modal-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.popup-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.popup-modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.popup-modal-close {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: gray;
+}
+
+.popup-modal-body {
+    margin-top: 10px;
+}
+
+.popup-modal-footer {
+    margin-top: 20px;
+    text-align: center;
+}

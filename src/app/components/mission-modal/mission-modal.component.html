@@ -1,0 +1,12 @@
+<div id="missionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold" id="missionTitle">Missions</h2>
+            <button (click)="closeModal()"
+                class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-700" id="missionList">
+            <!-- Dynamic list from TS -->
+        </ul>
+    </div>
+</div>
