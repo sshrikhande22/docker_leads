@@ -26,17 +26,34 @@
     </div>
   </div>
 
+
   <!-- Optional right section like avatar or menu -->
-  <div class="absolute right-4">
-    <button (click)="toggleMenu()" class="flex items-center space-x-2 focus:outline-none">
-      <img src="https://i.pravatar.cc/32?img=12" alt="Avatar" class="w-8 h-8 rounded-full border">
-      <i class="fas fa-bars text-gray-700 text-lg ml-1"></i>
-    </button>
-    <div id="menuDropdown" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md text-sm hidden z-50">
-      <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">Dashboard</a>
-      <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">My Learning</a>
-      <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">Challenges</a>
-      <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">Logout</a>
-    </div>
+  <div class="flex items-center space-x-4">
+    
+    <div class="notification-container">
+  <button (click)="toggleNotification()" class="bell-button">
+    <span class="icon-wrapper">
+      <i class="fa-solid fa-bell"></i>
+      <div *ngIf="!showNotification" class="notification-badge"></div>
+    </span>
+  </button>
+
+  <div *ngIf="showNotification" class="notification-box">
+    Great News! <strong>Monica just soared right to the top of TTP leaderboard!</strong>
   </div>
+</div>
+    <!-- <div class="relative"> 
+        <button (click)="toggleMenu()" class="flex items-center space-x-2 focus:outline-none">
+            <img src="https://i.pravatar.cc/32?img=12" alt="Avatar" class="w-8 h-8 rounded-full border">
+            <i class="fas fa-bars text-gray-700 text-lg ml-1"></i>
+        </button>
+        <div id="menuDropdown"
+            class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md text-sm hidden z-50">
+            <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">Dashboard</a>
+            <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">My Learning</a>
+            <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">Challenges</a>
+            <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">Logout</a>
+        </div>
+    </div> -->
+</div>
 </header>

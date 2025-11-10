@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { SiteDataService } from '../../services/site-data.service';
-import { CommonModule } from '@angular/common';
 import { FilterService } from '../../services/filter.service';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 export class HeaderComponent {
   selectedSite: string = 'Select Site';
   selectedBusinessline: string = 'Select';
+
   sites: string[] = [
     'CGN-HYD',
     'CGN-TLV',
@@ -21,14 +22,21 @@ export class HeaderComponent {
     'CGN-CBE',
   ];
 
-  constructor(private siteDataService: SiteDataService,
-    private filterService: FilterService
-  ) {}
+  constructor(private siteDataService: SiteDataService,     
+    private filterService: FilterService 
+) {}
 
   updateSiteData(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedSite = selectElement.value;
     this.siteDataService.setSelectedSite(this.selectedSite);
+  }
+
+  onBusinessLineChange() {
+
+    console.log(`HEADER: Sending business line to service: '${this.selectedBusinessline}'`);
+
+    this.filterService.setBusinessLine(this.selectedBusinessline);
   }
 
   toggleMenu() {
@@ -37,10 +45,9 @@ export class HeaderComponent {
     dropdown.classList.toggle("hidden");
   }  }
 
-  onBusinessLineChange() {
+  showNotification: boolean = false;
 
-    console.log(`HEADER: Sending business line to service: '${this.selectedBusinessline}'`);
-
-    this.filterService.setBusinessLine(this.selectedBusinessline);
+  toggleNotification(): void {
+    this.showNotification = !this.showNotification;
   }
 }
