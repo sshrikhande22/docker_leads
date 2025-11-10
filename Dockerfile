@@ -18,7 +18,7 @@ FROM nginx:alpine
 # 4. CRITICAL: Copy the built files from the 'BUILD' stage to Nginx's web root
 # CHANGED: Trying the slightly deeper 'browser' directory, which is common in Angular builds.
 # If this fails, we will try the original path again, but with a slight change (next step).
-COPY --from=BUILD /app/dist/siteoct/browser /usr/share/nginx/html
+COPY --from=BUILD /app/dist/leads/browser /usr/share/nginx/html
 
 # Nginx runs on port 80 by default
 EXPOSE 80
