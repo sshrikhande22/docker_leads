@@ -9,7 +9,6 @@ RUN npm install --silent
 COPY . .
 
 # 3. Build the Angular application for production
-# This uses the correct ng build command structure to create the 'dist' folder.
 RUN npm run build -- --configuration=production --base-href=/
 
 # --- Stage 2: Production Stage (Uses a tiny Nginx image to serve static files) ---
