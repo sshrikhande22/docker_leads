@@ -13,5 +13,8 @@ ng serve --open
 link for localhost: http://localhost:4200/
 
 Docker Commands 
-1. docker build -t leads-image . 
-2. docker run -d -p 8080:80 --name leads-app leads-image
+1. docker build -t leads-image . # create the image 
+2. docker run -d -p 8080:80 --name leads-app leads-image  #running the image 
+3. docker ps #Find the ID or name of your running container
+4. docker rm -f leads-app  #stop and remove the running container 
+
