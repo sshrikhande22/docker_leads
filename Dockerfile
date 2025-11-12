@@ -15,9 +15,7 @@ RUN npm run build -- --configuration=production --base-href=/
 # --- Stage 2: Production Stage (Uses a tiny Nginx image to serve static files) ---
 FROM nginx:alpine
 
-# 4. CRITICAL: Copy the built files from the 'BUILD' stage to Nginx's web root
-# CHANGED: Trying the slightly deeper 'browser' directory, which is common in Angular builds.
-# If this fails, we will try the original path again, but with a slight change (next step).
+# 4. Copy the built files from the 'BUILD' stage to Nginx's web root
 COPY --from=BUILD /app/dist/leads/browser /usr/share/nginx/html
 
 # Nginx runs on port 80 by default
